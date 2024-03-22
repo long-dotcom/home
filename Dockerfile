@@ -3,7 +3,7 @@ FROM node:19
 WORKDIR /app
 
 # 将 dist 文件夹复制到容器中
-COPY ./home/dist ./dist
+COPY ./dist ./dist
 
 # 安装 http-server 模块
 RUN npm install -g http-server
