@@ -12,15 +12,9 @@
     "url": "https://space.bilibili.com/52817911"
   },
   {
-    "name": "QQ",
-    "icon": "/images/icon/qq.png",
-    "tip": "有什么事吗",
-    "url": "https://res.abeim.cn/api/qq/?qq=1353837545"
-  },
-  {
     "name": "Email",
     "icon": "/images/icon/email.png",
     "tip": "来封 Email ~",
-    "url": "a199810112837@dingtalk.com"
+    "url": "mailto:a199810112837@dingtalk.com"
   }
 ]
