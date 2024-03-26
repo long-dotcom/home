@@ -2,11 +2,17 @@
   {
     "icon": "Toolbox",
     "name": "工具集",
-    "link": "https://tool.blue-bird.website/"
+    "link": "https://tool.blue-bird.website/",
+    "status": "green",
+    "delay": "0",
+    "css": "blink\n: \ntrue\nblink-Infinity\n: \ntrue\nstatus-dot\n: \ntrue\nstatus-green\n: \nfalse\nstatus-red\n: \ntrue"
   },
   {
     "icon": "LaptopCode",
     "name": "站点监测",
-    "link": "https://site-status.blue-bird.website/"
+    "link": "https://site-status.blue-bird.website/",
+    "status": "green",
+    "delay": "0",
+    "css": ""
   }
 ]

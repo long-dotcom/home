@@ -24,13 +24,15 @@
           <el-col v-for="(item, index) in site" :span="8" :key="item">
             <div
               class="item cards"
-              :style="index < 3 ? 'margin-bottom: 20px' : null"
+              :style="index < 3 ? 'margin-bottom: 21px' : null"
               @click="jumpLink(item)"
             >
               <Icon size="26">
                 <component :is="siteIcon[item.icon]" />
               </Icon>
               <span class="name text-hidden">{{ item.name }}</span>
+              <!-- 显示站点状态的小圆点 -->
+              <div class="status-dot" :class="item.css"></div>
             </div>
           </el-col>
         </el-row>
@@ -48,6 +50,7 @@ import { mainStore } from "@/store";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Mousewheel } from "swiper";
 import siteLinks from "@/assets/siteLinks.json";
+import { onMounted } from "vue";
 
 const store = mainStore();
 
@@ -61,6 +64,62 @@ const siteLinksList = computed(() => {
   return result;
 });
 
+// 根据状态获取样式类
+const getStatusClass = (status, delay) => {
+  return {
+    'status-dot': true,
+    'status-green': status === 'green',
+    'status-red': status === 'red',
+    'blink': status !== 'green', // 如果状态不是绿色，则添加闪烁类
+    [`blink-${Math.floor(delay * 10)}`]: status !== 'green' // 根据延迟调整闪烁频率
+  };
+};
+
+// 检查站点可访问性
+const pingSites = () => {
+  siteLinks.forEach(site => {
+    const img = new Image();
+    const start = performance.now();
+
+    // 设置超时计时器
+    const timeoutId = setTimeout(() => {
+      site.status = 'timeout';
+      site.delay = Infinity;
+    }, 2000); // 设置2秒超时
+
+    img.onload = () => {
+      clearTimeout(timeoutId); // 清除超时计时器
+      const end = performance.now();
+      const delay = end - start;
+      console.log("耗时：" + delay + "ms");
+
+      if (delay < 500) {
+        site.status = 'green';
+      } else {
+        site.status = 'red';
+      }
+
+      site.delay = delay;
+    };
+
+    img.onerror = () => {
+      clearTimeout(timeoutId); // 清除超时计时器
+      site.status = 'red';
+      site.delay = Infinity;
+    };
+
+    site.css = getStatusClass(site.status, site.delay);
+    img.src = site.link + '?timestamp=' + new Date().getTime();
+  });
+};
+
+onMounted(() => {
+  // 每 5 秒检查一次站点的可访问性
+  setInterval(pingSites, 5000);
+});
+
+
+
 // 网站链接图标
 const siteIcon = {
   Blog,
@@ -72,6 +131,9 @@ const siteIcon = {
   LaptopCode,
   Toolbox
 };
+
+
+
 
 // 链接跳转
 const jumpLink = (data) => {
@@ -171,5 +233,50 @@ onMounted(() => {
       height: 180px;
     }
   }
+
+  .status-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #ccc; /* 默认颜色 */
+    position: absolute; /* 绝对定位 */
+    top: 10px; /* 位于容器的顶部 */
+    left: 10px; /* 位于容器的左侧 */
+  }
+
+  /* 状态样式 */
+  .status-green {
+    background-color: #00ff00; /* 绿色 */
+  }
+
+  .status-red {
+    background-color: #ff0000; /* 红色 */
+  }
+
+  /* 闪烁样式 */
+  .blink {
+    animation: blink 1s infinite; /* 1s 是闪烁的周期，infinite 表示无限循环 */
+  }
+
+  /* 根据延迟调整闪烁频率的样式 */
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .blink-0 {
+    animation-duration: 0s; /* 0s 是闪烁的周期，即不闪烁 */
+  }
+
+  /* 根据 delay * 10 的值来调整闪烁频率的样式 */
+  .blink-1 {
+    animation-duration: 0.1s; /* 闪烁频率为 100ms */
+  }
+
+  .blink-2 {
+    animation-duration: 0.2s; /* 闪烁频率为 200ms */
+  }
+
 }
 </style>
